@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ShowScreen from '../screens/ShowScreen';
-import Navigation from '../navigation/Navigation';
+
 import IndexScreen from '../screens/IndexScreen';
 
 const Stack = createNativeStackNavigator();

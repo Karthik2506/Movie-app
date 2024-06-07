@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { Button, ButtonIcon, ButtonText, HStack, Icon, Input, InputField, InputIcon, VStack } from '@gluestack-ui/themed';
 import { FormControl, FormControlLabelText, Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@gluestack-ui/themed';
@@ -12,6 +12,7 @@ const Search = ({ navigation }) => {
     const [search, setSearch] = useState('');
     const [movies, setMovies] = useState([]);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const [searchInitiated, setSearchInitiated] = useState(false);
 
     const searchCategories = [
@@ -21,11 +22,14 @@ const Search = ({ navigation }) => {
     ];
 
     const fetchSearch = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`${BASE_URL}/search/${searchCategory}?api_key=${API_KEY}&query=${search}`);
             setMovies(response.data.results);
         } catch (error) {
             setError('Failed to fetch data. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -94,12 +98,17 @@ const Search = ({ navigation }) => {
                     </FormControl>
                 </VStack>
             </View>
-            <View style={styles.contentContainer}>
-                {searchInitiated ? (
+            <View>
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#00bcd4" />
+                        <Text style={styles.loadingText}>Loading page...</Text>
+                    </View>
+                ) : searchInitiated ? (
                     movies.length > 0 ? (
                         <MoviesContainer movies={movies} navigation={navigation} />
                     ) : (
-                        <Text style={styles.initiateText} >No results found. Please try a different search term.</Text>
+                        <Text style={styles.initiateText}>No results found. Please try a different search term.</Text>
                     )
                 ) : (
                     <Text style={styles.initiateText}>Please Initiate a search</Text>
@@ -133,7 +142,17 @@ const styles = StyleSheet.create({
     cyanButton: {
         backgroundColor: '#00bcd4',
     },
-   
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
     initiateText: {
         paddingTop: 150,
         fontSize: 18,

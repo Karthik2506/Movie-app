@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config';
-import Header from './src/components/Header';
+
 import Navigation from './src/navigation/Navigation';
 import AppStack from './src/stacks/AppStack';
 

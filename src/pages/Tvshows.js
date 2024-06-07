@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import MoviesContainer from '../containers/moviesContainer';
 import { API_KEY, BASE_URL } from '../apiConfig';
@@ -8,6 +8,7 @@ import { Select, SelectTrigger, SelectInput, SelectPortal, SelectBackdrop, Selec
 const Tvshows = ({ navigation }) => {
     const [tvCategory, setTvCategory] = useState('popular');
     const [movies, setMovies] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const Tvcategories = [
         { key: 'airing_today', label: 'Airing Today' },
@@ -17,11 +18,14 @@ const Tvshows = ({ navigation }) => {
     ];
 
     const fetchTvshows = async (tvcategory) => {
+        setLoading(true);
         try {
             const response = await axios.get(`${BASE_URL}/tv/${tvcategory}?api_key=${API_KEY}`);
             setMovies(response.data.results);
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -53,7 +57,13 @@ const Tvshows = ({ navigation }) => {
                     </SelectPortal>
                 </Select>
             </View>
-            <MoviesContainer movies={movies} navigation={navigation} />
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+            ) : (
+                <MoviesContainer movies={movies} navigation={navigation} />
+            )}
         </View>
     );
 }
@@ -71,7 +81,12 @@ const styles = StyleSheet.create({
     selectContainer: {
         width: '100%',
         paddingRight: 20,
-    }
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 
 export default Tvshows;
